@@ -20,6 +20,7 @@ import { Login } from "@/components/layout/Login";
 import { BrowserRouter, Routes, Route, Navigate, useLocation } from "react-router-dom";
 import { AuthProvider, useAuth } from "@/context/AuthContext";
 import type { UserRole } from "@/context/AuthContext";
+import { Toaster } from "@/components/ui/toaster";
 
 function DashboardApp() {
     const [activeTab, setActiveTab] = useState("dashboard")
@@ -126,6 +127,7 @@ function App() {
                     {/* Redirect any unknown route to login */}
                     <Route path="*" element={<Navigate to="/" replace />} />
                 </Routes>
+                <Toaster />
             </BrowserRouter>
         </AuthProvider>
     );

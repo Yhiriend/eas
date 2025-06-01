@@ -8,9 +8,11 @@ export type UserRole = 'professor' | 'admin';
 // Define user type with role
 export type User = {
   id: string;
+  fullname: string;
   username: string;
+  password?: string;
   role: UserRole;
-  name: string;
+  active: boolean;
 };
 
 interface AuthContextType {

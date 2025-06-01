@@ -6,14 +6,18 @@ import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Fingerprint, RefreshCw } from "lucide-react";
+import { registerProfessor } from "@/services/userService";
+import { useToast } from "@/hooks/use-toast";
 
 type UserType = 'student' | 'professor';
 
 export function Users() {
     const [userType, setUserType] = useState<UserType>('student');
     const [isScanning, setIsScanning] = useState(false);
+    const [isLoading, setIsLoading] = useState(false);
+    const { toast } = useToast();
     const [professorData, setProfessorData] = useState({
-        fullName: '',
+        fullname: '',
         username: '',
         password: ''
     });
@@ -26,9 +30,9 @@ export function Users() {
     };
 
     const generateUsername = () => {
-        if (!professorData.fullName) return;
+        if (!professorData.fullname) return;
         
-        const firstName = professorData.fullName.split(' ')[0].toLowerCase();
+        const firstName = professorData.fullname.split(' ')[0].toLowerCase();
         const randomNum = Math.floor(Math.random() * 1000);
         const generatedUsername = `${firstName}${randomNum}`;
         
@@ -43,6 +47,34 @@ export function Users() {
             ...prev,
             [field]: value
         }));
+    };
+
+    const handleProfessorSubmit = async (e: React.FormEvent) => {
+        e.preventDefault();
+        setIsLoading(true);
+
+        try {
+            await registerProfessor(professorData);
+            toast({
+                title: "Profesor registrado",
+                description: "El profesor ha sido registrado exitosamente.",
+                variant: "default",
+            });
+            // Reset form
+            setProfessorData({
+                fullname: '',
+                username: '',
+                password: ''
+            });
+        } catch (error) {
+            toast({
+                title: "Error",
+                description: "Hubo un error al registrar el profesor.",
+                variant: "destructive",
+            });
+        } finally {
+            setIsLoading(false);
+        }
     };
 
     return (
@@ -100,14 +132,15 @@ export function Users() {
                         </form>
                     </TabsContent>
                     <TabsContent value="professor">
-                        <form className="space-y-4">
+                        <form className="space-y-4" onSubmit={handleProfessorSubmit}>
                             <div className="space-y-2">
                                 <Label htmlFor="professorName">Nombre Completo</Label>
                                 <Input 
                                     id="professorName" 
                                     placeholder="Ingrese el nombre completo"
-                                    value={professorData.fullName}
-                                    onChange={(e) => handleProfessorInputChange('fullName', e.target.value)}
+                                    value={professorData.fullname}
+                                    onChange={(e) => handleProfessorInputChange('fullname', e.target.value)}
+                                    required
                                 />
                             </div>
                             <div className="space-y-2">
@@ -118,12 +151,13 @@ export function Users() {
                                         placeholder="Ingrese el nombre de usuario"
                                         value={professorData.username}
                                         onChange={(e) => handleProfessorInputChange('username', e.target.value)}
+                                        required
                                     />
                                     <Button 
                                         type="button" 
                                         variant="outline" 
                                         onClick={generateUsername}
-                                        disabled={!professorData.fullName}
+                                        disabled={!professorData.fullname}
                                     >
                                         <RefreshCw className="h-4 w-4" />
                                     </Button>
@@ -137,9 +171,12 @@ export function Users() {
                                     placeholder="Ingrese la contraseña"
                                     value={professorData.password}
                                     onChange={(e) => handleProfessorInputChange('password', e.target.value)}
+                                    required
                                 />
                             </div>
-                            <Button type="submit" className="w-full">Registrar Profesor</Button>
+                            <Button type="submit" className="w-full" disabled={isLoading}>
+                                {isLoading ? 'Registrando...' : 'Registrar Profesor'}
+                            </Button>
                         </form>
                     </TabsContent>
                 </Tabs>
