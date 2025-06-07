@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 import './App.css'
 import { useState } from "react";
 import {
@@ -19,8 +19,8 @@ import { Reports } from "@/components/reports/Reports";
 import { Login } from "@/components/layout/Login";
 import { BrowserRouter, Routes, Route, Navigate, useLocation } from "react-router-dom";
 import { AuthProvider, useAuth } from "@/context/AuthContext";
-import type { UserRole } from "@/context/AuthContext";
 import { Toaster } from "@/components/ui/toaster";
+import { initializeCoursesCache } from "./services/userService";
 
 function DashboardApp() {
     const [activeTab, setActiveTab] = useState("dashboard")
@@ -50,6 +50,10 @@ function DashboardApp() {
         }, 3000)
     }
 
+    useEffect(() => {
+        initializeCoursesCache();
+    }, []);
+
     return (
         <div className="min-h-screen w-full bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50">
             <Header />
@@ -63,7 +67,7 @@ function DashboardApp() {
                         </TabsTrigger>
                         <TabsTrigger value="students" className="flex items-center space-x-2">
                             <Users className="h-4 w-4" />
-                            <span>{user?.role === 'admin' ? 'Usuarios' : 'Estudiantes'}</span>
+                            <span>Estudiantes</span>
                         </TabsTrigger>
                         <TabsTrigger value="attendance" className="flex items-center space-x-2">
                             <Fingerprint className="h-4 w-4" />

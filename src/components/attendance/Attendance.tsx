@@ -11,16 +11,18 @@ interface AttendanceRecord {
 }
 
 interface AttendanceProps {
-    isScanning: boolean;
-    onScan: () => void;
     records: AttendanceRecord[];
 }
 
-export function Attendance({ isScanning, onScan, records }: AttendanceProps) {
+export function Attendance({ records }: AttendanceProps) {
     return (
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-            <AttendanceScanner isScanning={isScanning} onScan={onScan} />
-            <TodayRecords records={records} />
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+            <div className="lg:col-span-1">
+                <AttendanceScanner />
+            </div>
+            <div className="lg:col-span-2">
+                <TodayRecords />
+            </div>
         </div>
     );
 } 
